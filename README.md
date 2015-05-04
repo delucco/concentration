@@ -1,9 +1,6 @@
 # concentration
 
-To download and play, do the following:
-
->1) npm install
->2) node server.js
+To download and play, ###npm install then run ###node server.js 
 
 Play from localhost.
 
