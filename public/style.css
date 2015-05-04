@@ -1,0 +1,25 @@
+.app {
+  text-align: center;
+  border: 1px solid #d3d3d3;
+}
+
+/*.card {
+  float: left;
+}*/
+
+.cardTable {
+  border: 1px solid #d3d3d3;
+}
+
+img, .filler {
+  width: 7%;
+  background-color: #d3d3d3;
+}
+
+.scoreboard {
+  border: 1px solid #d3d3d3;
+}
+
+.turn {
+  background-color: #d3d3d3;
+}
