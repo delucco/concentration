@@ -12,8 +12,17 @@ var _state = {
   playerTurn: true,
   cardTable: [],
   selections: [],
-  revealedCards: {}
+  revealedCards: {},
+  pairCreated: false
 };
+
+var confirmPair = function(){
+  _state.pairCreated = true;
+}
+
+var startNewTurn = function(){
+  _state.pairCreated = false;
+}
 
 var dealCards = function(cards){
   _state.cardTable = cards;
@@ -85,16 +94,23 @@ AppDispatcher.register(function(action){
       AppStore.emitChange();
       break;
 
+    case 'SELECTED_SECOND_CARD':
+      confirmPair();
+      AppStore.emitChange();
+      break;
+
     case 'SELECTED_CORRECTLY':
       updateScore();
       removeMatches();
+      removeSelections();
+      startNewTurn();
       AppStore.emitChange();
       break;
       
     case 'SELECTED_INCORRECTLY':
-      console.log('switchPlayer');
-      switchPlayer();
       removeSelections();
+      switchPlayer();
+      startNewTurn();
       AppStore.emitChange();
       break;  
 

@@ -1597,26 +1597,27 @@ var Actions = {
   selectCard: function(row, col){
     var selectedCard = cardMatrix[row][col];
     selections.push(selectedCard);
-    console.dir(selections);
     AppDispatcher.handleViewAction({
       actionType: 'SELECTED_CARD',
       index: [row, col]
     });
     if (selections.length === 2){
-      console.log('selected second card')
+      AppDispatcher.handleViewAction({
+        actionType: 'SELECTED_SECOND_CARD'
+      });
       if (selections[0].rank === selections[1].rank){
+        selections = [];
         setTimeout(function(){
           AppDispatcher.handleViewAction({
             actionType: 'SELECTED_CORRECTLY'
           });
-          selections = [];
         }, 1000);
       } else {
+        selections = [];
         setTimeout(function(){
           AppDispatcher.handleViewAction({
             actionType: 'SELECTED_INCORRECTLY'
           });
-          selections = [];
         }, 1000);
       }
     }
@@ -1644,25 +1645,46 @@ var App = React.createClass({displayName: "App",
   },
 
   componentDidUpdate: function() {
-    var randomRow = Math.floor(Math.random()*4);
-    var randomCol = Math.floor(Math.random()*13);
-    if (!this.state.playerTurn && this.state.selections.length < 1){
-      console.log('hi')
-      Actions.selectCard(randomRow, randomCol);
-    } else if (!this.state.playerTurn && this.state.selections.length === 1){
-      console.log('hello')
-      var rank = this.state.selections[0][2];
-      revealedCards = this.state.revealedCards;
-      setTimeout(function(){
-        for (var key in revealedCards){
-          if (rank === revealedCards[key].rank){
-            randomRow = key.split(',')[0];
-            randomCol = key.split(',')[1];
-          } 
-        }
-        Actions.selectCard(randomRow, randomCol);
-      }, 1000);
+    if (this.state.score.user >= 13 || this.state.score.computer >= 13){
+      alert('game over');
     }
+    var playerTurn = this.state.playerTurn;
+    var revealedCards = this.state.revealedCards;
+    var selections = this.state.selections;
+    var pairCreated = this.state.pairCreated;
+    var cardTable = this.state.cardTable;
+    var generateRandomIndex = function(){
+      var randomRow = Math.floor(Math.random()*4);
+      var randomCol = Math.floor(Math.random()*13);
+      if (cardTable[randomRow][randomCol].removed){
+        generateRandomIndex();
+      }
+      return [randomRow, randomCol];
+    }
+    setTimeout(function(){
+      if (!playerTurn && selections.length < 1 && !pairCreated){
+        var index = generateRandomIndex();
+        Actions.selectCard(index[0], index[1]);
+      } else if (!playerTurn && selections.length === 1 && !pairCreated){
+        var index = generateRandomIndex();
+        // for (var key in revealedCards){
+        //   console.dir(selections)
+        //   var keyRow = key.split(',')[0];
+        //   var keyCol = key.split(',')[1]; 
+        //   if (selections[0][0] !== keyRow && selections[0][1] !== keyCol){
+        //     if (selections[0][2] === revealedCards[key].rank){
+        //       console.log('row selcetion rd 1 ' + selections[0][0])
+        //       console.log('col selcetion rd 1 ' + selections[0][1])
+        //       index[0] = keyRow;
+        //       index[1] = keyCol;
+        //       console.log('row selcetion rd 2 ' + index[0])
+        //       console.log('col selcetion rd 2 ' + index[1])
+        //     } 
+        //   }
+        // }
+        Actions.selectCard(index[0], index[1]);
+      }
+    }, 1000);
   },
 
   render: function() {
@@ -1867,8 +1889,17 @@ var _state = {
   playerTurn: true,
   cardTable: [],
   selections: [],
-  revealedCards: {}
+  revealedCards: {},
+  pairCreated: false
 };
+
+var confirmPair = function(){
+  _state.pairCreated = true;
+}
+
+var startNewTurn = function(){
+  _state.pairCreated = false;
+}
 
 var dealCards = function(cards){
   _state.cardTable = cards;
@@ -1940,16 +1971,23 @@ AppDispatcher.register(function(action){
       AppStore.emitChange();
       break;
 
+    case 'SELECTED_SECOND_CARD':
+      confirmPair();
+      AppStore.emitChange();
+      break;
+
     case 'SELECTED_CORRECTLY':
       updateScore();
       removeMatches();
+      removeSelections();
+      startNewTurn();
       AppStore.emitChange();
       break;
       
     case 'SELECTED_INCORRECTLY':
-      console.log('switchPlayer');
-      switchPlayer();
       removeSelections();
+      switchPlayer();
+      startNewTurn();
       AppStore.emitChange();
       break;  
 

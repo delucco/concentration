@@ -47,26 +47,27 @@ var Actions = {
   selectCard: function(row, col){
     var selectedCard = cardMatrix[row][col];
     selections.push(selectedCard);
-    console.dir(selections);
     AppDispatcher.handleViewAction({
       actionType: 'SELECTED_CARD',
       index: [row, col]
     });
     if (selections.length === 2){
-      console.log('selected second card')
+      AppDispatcher.handleViewAction({
+        actionType: 'SELECTED_SECOND_CARD'
+      });
       if (selections[0].rank === selections[1].rank){
+        selections = [];
         setTimeout(function(){
           AppDispatcher.handleViewAction({
             actionType: 'SELECTED_CORRECTLY'
           });
-          selections = [];
         }, 1000);
       } else {
+        selections = [];
         setTimeout(function(){
           AppDispatcher.handleViewAction({
             actionType: 'SELECTED_INCORRECTLY'
           });
-          selections = [];
         }, 1000);
       }
     }

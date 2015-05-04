@@ -1,0 +1,28 @@
+{
+  "name": "concentration",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/delucco/concentration.git"
+  },
+  "author": "concentration",
+  "dependencies": {
+    "es6-promise": "^2.1.1",
+    "express": "^4.12.3",
+    "object-assign": "^2.0.0",
+    "react": "^0.13.2"
+  },
+  "devDependencies": {
+    "browserify": "^10.0.0",
+    "gulp": "^3.8.11",
+    "gulp-livereload": "^3.8.0",
+    "object-assign": "^2.0.0",
+    "reactify": "^1.1.0",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
